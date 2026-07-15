@@ -75,6 +75,17 @@
     },
     "links": {
       "type": "object"
+    },
+    "tests": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "image": {
+          "description": "Public quay.io image for running the component's tests in",
+          "type": "string",
+          "pattern": "^quay\\.io\\/\\w+\\/[-\\w]+(?:@sha256:|:)[-\\w]+"
+        }
+      }
     }
   },
   "$defs": {
