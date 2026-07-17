@@ -134,7 +134,7 @@ def test_validate_metadata_yaml_success(test_data):
             expected_exception=ValidationError,
             expected_exception_msg=(
                 r"File 'scripts/validate_metadata/test_data/metadata/invalid/invalid_stability\.yaml'.*"
-                r"'invalid-stability' is not one of \['alpha', 'beta', 'stable'\]"
+                r"'invalid-stability' is not one of \['experimental', 'alpha', 'beta', 'stable'\]"
             ),
         ),
         ValidateMetadataTestFile(
@@ -162,11 +162,12 @@ def test_validate_metadata_yaml_success(test_data):
             ),
         ),
         ValidateMetadataTestFile(
-            file_name="invalid_ci_dependency_probe.yaml",
+            file_name="missing_kfp_dependency.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/invalid_ci_dependency_probe\.yaml'.*"
-                r"'invalid-probe-value' is not of type 'boolean'"
+                r"File 'scripts/validate_metadata/test_data/metadata/invalid/missing_kfp_dependency\.yaml'.*"
+                r"does not contain items matching the given schema in "
+                r"\['properties'\]\['dependencies'\]\['properties'\]\['kubeflow'\]\['contains'\]"
             ),
         ),
         ValidateMetadataTestFile(
@@ -209,6 +210,14 @@ def test_validate_metadata_yaml_success(test_data):
             expected_exception_msg=(
                 r"File 'scripts/validate_metadata/test_data/metadata/invalid/invalid_ci_category\.yaml'.*"
                 r"Additional properties are not allowed.*in \['properties'\]\['ci'\]\['additionalProperties'\]"
+            ),
+        ),
+        ValidateMetadataTestFile(
+            file_name="invalid_ci_dependency_probe.yaml",
+            expected_exception=ValidationError,
+            expected_exception_msg=(
+                r"File 'scripts/validate_metadata/test_data/metadata/invalid/invalid_ci_dependency_probe\.yaml'.*"
+                r"'invalid-probe-value' is not of type 'boolean'"
             ),
         ),
         ValidateMetadataTestFile(
