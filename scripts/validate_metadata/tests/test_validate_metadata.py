@@ -5,8 +5,9 @@ from pathlib import Path
 from typing import Optional
 
 import pytest
-import validate_metadata
-from validate_metadata import ValidationError
+
+from scripts.validate_metadata import validate_metadata
+from scripts.validate_metadata.validate_metadata import ValidationError
 
 TEST_DATA = Path(__file__).parent / "resources"
 INVALID_METADATA_DIR = TEST_DATA / "metadata" / "invalid"
@@ -85,7 +86,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="missing_verified_date.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/missing_verified_date\.yaml'.*"
+                r"File '.*/missing_verified_date\.yaml'.*"
                 r"'lastVerified' is a required property"
             ),
         ),
@@ -93,7 +94,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="invalid_verified_date.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/invalid_verified_date\.yaml'.*"
+                r"File '.*/invalid_verified_date\.yaml'.*"
                 r"'2024-11-20T0' is not a 'date-time'"
             ),
         ),
@@ -101,7 +102,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="passed_verified_date.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/passed_verified_date\.yaml'.*"
+                r"File '.*/passed_verified_date\.yaml'.*"
                 r"'2024-11-10T00:00:00Z' references a date older than one year \(which is considered not valid\)"
             ),
         ),
@@ -109,7 +110,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="missing_name.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/missing_name\.yaml'.*"
+                r"File '.*/missing_name\.yaml'.*"
                 r"'name' is a required property"
             ),
         ),
@@ -117,7 +118,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="invalid_name.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/invalid_name\.yaml'.*"
+                r"File '.*/invalid_name\.yaml'.*"
                 r"2 is not of type 'string'"
             ),
         ),
@@ -125,7 +126,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="missing_stability.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/missing_stability\.yaml'.*"
+                r"File '.*/missing_stability\.yaml'.*"
                 r"'stability' is a required property"
             ),
         ),
@@ -133,7 +134,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="invalid_stability.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/invalid_stability\.yaml'.*"
+                r"File '.*/invalid_stability\.yaml'.*"
                 r"'invalid-stability' is not one of \['experimental', 'alpha', 'beta', 'stable'\]"
             ),
         ),
@@ -141,7 +142,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="missing_dependencies.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/missing_dependencies\.yaml'.*"
+                r"File '.*/missing_dependencies\.yaml'.*"
                 r"'dependencies' is a required property"
             ),
         ),
@@ -149,7 +150,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="invalid_dependencies_type.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/invalid_dependencies_type\.yaml'.*"
+                r"File '.*/invalid_dependencies_type\.yaml'.*"
                 r"'invalid-dependencies-type' is not of type 'object'"
             ),
         ),
@@ -157,7 +158,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="invalid_dependencies_category.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/invalid_dependencies_category\.yaml'.*"
+                r"File '.*/invalid_dependencies_category\.yaml'.*"
                 r"Additional properties are not allowed"
             ),
         ),
@@ -165,7 +166,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="missing_kfp_dependency.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/missing_kfp_dependency\.yaml'.*"
+                r"File '.*/missing_kfp_dependency\.yaml'.*"
                 r"does not contain items matching the given schema in "
                 r"\['properties'\]\['dependencies'\]\['properties'\]\['kubeflow'\]\['contains'\]"
             ),
@@ -174,8 +175,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="invalid_dependency_semantic_versioning.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/"
-                r"test_data/metadata/invalid/invalid_dependency_semantic_versioning\.yaml'.*"
+                r"File '.*/invalid_dependency_semantic_versioning\.yaml'.*"
                 r"'3.6' does not match.* in "
                 r"\['properties'\]\['dependencies'\]\['properties'\]\['external_services'\]\['items'\]\['properties'\]\['version'\]\['pattern'\]"
             ),
@@ -184,7 +184,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="invalid_tag_type.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/invalid_tag_type\.yaml'.*"
+                r"File '.*/invalid_tag_type\.yaml'.*"
                 r"'tags' is not of type 'array'"
             ),
         ),
@@ -192,7 +192,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="invalid_tag_array_type.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/invalid_tag_array_type\.yaml'.*"
+                r"File '.*/invalid_tag_array_type\.yaml'.*"
                 r"2 is not of type 'string' in \['properties'\]\['tags'\]\['items'\]\['type'\]"
             ),
         ),
@@ -200,7 +200,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="invalid_ci.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/invalid_ci\.yaml'.*"
+                r"File '.*/invalid_ci\.yaml'.*"
                 r"'invalid-ci-value' is not of type 'object'"
             ),
         ),
@@ -208,7 +208,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="invalid_ci_category.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/invalid_ci_category\.yaml'.*"
+                r"File '.*/invalid_ci_category\.yaml'.*"
                 r"Additional properties are not allowed.*in \['properties'\]\['ci'\]\['additionalProperties'\]"
             ),
         ),
@@ -216,7 +216,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="invalid_ci_dependency_probe.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/invalid_ci_dependency_probe\.yaml'.*"
+                r"File '.*/invalid_ci_dependency_probe\.yaml'.*"
                 r"'invalid-probe-value' is not of type 'boolean'"
             ),
         ),
@@ -224,7 +224,7 @@ def test_validate_metadata_yaml_success(test_data):
             file_name="invalid_links.yaml",
             expected_exception=ValidationError,
             expected_exception_msg=(
-                r"File 'scripts/validate_metadata/test_data/metadata/invalid/invalid_links\.yaml'.*"
+                r"File '.*/invalid_links\.yaml'.*"
                 r"'https://invalid-link' is not of type 'object'"
             ),
         ),

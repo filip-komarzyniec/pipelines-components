@@ -2,6 +2,7 @@ import argparse
 import functools
 import json
 import logging
+import re
 import sys
 from datetime import datetime, timezone
 from itertools import pairwise
@@ -18,15 +19,13 @@ METADATA = "metadata.yaml"
 
 _jsonschema_format_checker = jsonschema.FormatChecker()
 
-default_date_time_checker = _jsonschema_format_checker.checkers["date-time"][0]
-
 
 @_jsonschema_format_checker.checks("date-time", raises=ValueError)
 def check_date_time(instance: Any) -> bool:
     """Performs additional validation of instances marked with format: date-time.
 
     It is checked whether:
-        - the instance is in valid RFC-3339 format
+        - the instance is in expected format (RFC3339 and ISO8601 compliant YYYY-MM-DDThh:mm:ssZ)
         - the instance references date no older than one year (exclusive)
 
     Args:
@@ -36,7 +35,9 @@ def check_date_time(instance: Any) -> bool:
     Returns:
         A boolean stating whether validation succeeded or not.
     """
-    if not default_date_time_checker(instance):
+    # jsonschema runs validators in random order as per specification:
+    # https://github.com/python-jsonschema/jsonschema/issues/1519#issuecomment-4980606159
+    if not (isinstance(instance, str) or re.match(r"\d{4}(-\d{2}){2}T(\d{2}:){2}\d{2}Z$", instance)):
         return False
 
     now = datetime.now(tz=timezone.utc)

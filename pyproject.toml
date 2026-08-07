@@ -42,7 +42,6 @@ test = [
     # Required for pipeline validation (validate_examples, validate_base_images)
     "kfp-kubernetes",
     "jsonschema",
-    "rfc3339-validator"
 ]
 # Local development (extends test with additional tools)
 dev = [

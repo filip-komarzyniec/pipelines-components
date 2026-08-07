@@ -55,6 +55,7 @@
     },
     "lastVerified": {
       "type": "string",
+      "description": "timestamp must match YYYY-MM-DDThh:mm:ssZ format. It references the last update to the directory containing this metadata file.",
       "format": "date-time"
     },
     "tags": {
