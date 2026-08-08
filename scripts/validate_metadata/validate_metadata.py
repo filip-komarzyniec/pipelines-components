@@ -37,7 +37,7 @@ def check_date_time(instance: Any) -> bool:
     """
     # jsonschema runs validators in random order as per specification:
     # https://github.com/python-jsonschema/jsonschema/issues/1519#issuecomment-4980606159
-    if not (isinstance(instance, str) or re.match(r"\d{4}(-\d{2}){2}T(\d{2}:){2}\d{2}Z$", instance)):
+    if not (isinstance(instance, str) and re.match(r"\d{4}(-\d{2}){2}T(\d{2}:){2}\d{2}Z$", instance)):
         return False
 
     now = datetime.now(tz=timezone.utc)
