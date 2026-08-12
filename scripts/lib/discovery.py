@@ -41,7 +41,7 @@ def normalize_targets(raw_paths: Sequence[str]) -> list[Path]:
     normalized: list[Path] = []
     for raw in raw_paths:
         candidate = Path(raw)
-        if not candidate.is_absolute():
+        if not candidate.is_absolute():  # TODO I think some logic mistakes
             candidate = (repo_root / candidate).resolve()
         else:
             candidate = candidate.resolve()
