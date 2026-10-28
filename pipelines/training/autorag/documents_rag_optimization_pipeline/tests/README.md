@@ -34,38 +34,99 @@ Clear benefits:
 Minor inconveniences:
 
 - small maintenance overhead for the authors
--
 
 ### Architecture & Flow
 
 ![Test execution flow](tests_execution_graph.svg)
 
 
-### Best practises to write tests
+### Usual tests skeleton
+
+The following depicts the directories structure as enforced by the pipelines-components repository
+
+```pre
+pipelines-components/
+├── components/
+│   └── my_component/
+│       ├── ...
+│       ├── component.py
+│       ├── tests/
+│       │   └── test_component.py
+│       └── metadata.yaml
+├── ...
+└── pipelines/
+    ├── ...
+    └── my_pipeline/
+        ├── pipeline.py
+        ├── tests/
+        │   └── test_pipeline.py
+        └── metadata.yaml
+```
+
+Let's assume we want to run our component's tests in a dedicated image:
+
+```yaml
+# components/metadata.yaml file
+name: my_component
+# some other required fields
+tests:
+  image: quay.io/my_repository/my_image:mytag
+```
+
+The tests themselves should be pytest-discoverable modules, classes and functions following standard testing best practises. The `kfp.dsl`-wrapped component and pipelines functions should be tested using local runners as described in the docs: https://www.kubeflow.org/docs/components/pipelines/user-guides/core-functions/execute-kfp-pipelines-locally/.
+
+```python
+# test_component.py
+
+from kfp import local
+from components.my_component.component import my_component
+
+local.init(runner=local.DockerRunner())
+
+def test_my_scenario():
+  # some logic
+  result = my_component(args, kwargs)
+  # some more logic
+  assert result
+
+```
+
+⚠️ Not all `kfp` constructs are supported by the local runners. Each such case must be investigated separately. The general rule of thumb is to extract the logic into a separate, non-dsl-wrapped function suitable for unit and integration testing.  
+The non-locally testebale scenarios should be covered by tests run, e.g. on a local, lightweight k8s cluster.
 
 ### Caveats and assumptions
 
-#### python environment is ready out of the box for commands executed in the container
+* no possibility to build an image from Dockerfile (at least currently)
 
-No further steps (e.g. sourcing a venv) is needed to enable the target python env in the container process.
+  Problem arises especially when tests run is a necessary step in a complicated (often concurent) CI/CD pipeline that also builds the newest image to be used in tests.  
+  Unless the CI/CD pipeline offers the possibility to make the tests step dependant on the build image step, there is no way to support it from code.
 
-#### pytest and a few other necessary packages to be installed in the provided image will not ruin it
+* python environment is ready out of the box for commands executed in the container
 
-Current CI/CD pipeline sets up the python env first (`.github/actions/setup-python-ci/action.yml`) and proceeds to install `pipelines-components[test]`.
-With the per component/pipeline image it's now obsolete, however the following packages are mandatory in order to run tests: `pytest pytest-cov pytest-timeout`.
+  No further steps (e.g. sourcing a venv) is needed to enable the target python env in the container process.
 
-#### All packages necessary to succesfully run tests are pre-installed on the provided image
+* tests can be executed using pytest library
 
-#### internet access and public availability of the `tests.image` image
+* pytest and a few other mandatory packages that will be installed automatically in the provided image will not ruin it
 
-This should not be a big deal as the current CI/CD pipeline is connected to the internet as well.
+  Current CI/CD pipeline sets up the python env first (`.github/actions/setup-python-ci/action.yml`) and proceeds to install `pipelines-components[test]`.
+  With the per component/pipeline image it's now obsolete, however the following packages are mandatory in order to run tests: `pytest pytest-cov pytest-timeout`.
 
-#### `--verbose` flag does not affect container runs
+* all packages necessary to succesfully run tests are pre-installed on the provided image
+
+* internet access and public availability of the `tests.image` image
+
+  This should not be a big deal as the current CI/CD pipeline is connected to the internet as well.  
+  The image access must be set to public.
+
+* `--verbose` flag does not affect container runs
 
 The `--verbose` CLI flag is forwarded only to the host-local pytest invocation. Container
 workers always use quiet mode regardless of the flag.
 
 ### Additional links
 
-Slack discussion: https://redhat-internal.slack.com/archives/C09RJPFTNNT/p1779181078563379
+changes described in this document: https://github.com/kubeflow/pipelines-components/compare/main...filip-komarzyniec:pipelines-components:allow_components_tests_execution_in_a_container?expand=1 
+Related issue link: 
+Slack discussion: https://redhat-internal.slack.com/archives/C09RJPFTNNT/p1779181078563379  
 Jira issue: https://redhat.atlassian.net/browse/RHOAIENG-67148
